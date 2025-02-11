@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring Sensor</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        h1 { color: #007BFF; }
+        table { width: 50%; margin: auto; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
+        th { background-color: #007BFF; color: white; }
+    </style>
+</head>
+<body>
+
+    <h1>Monitoring Sensor Multiplexer</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Channel</th>
+                <th>Tegangan (V)</th>
+            </tr>
+        </thead>
+        <tbody id="sensorData">
+            <!-- Data akan muncul di sini -->
+        </tbody>
+    </table>
+
+    <script>
+        // Konfigurasi Firebase
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",  // Kosongkan jika menggunakan Realtime Database tanpa otentikasi
+            authDomain: "projek-ta-74a9a.firebaseapp.com",
+            databaseURL: "https://projek-ta-74a9a-default-rtdb.firebaseio.com/",
+            projectId: "projek-ta-74a9a",
+            storageBucket: "projek-ta-74a9a.appspot.com",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Inisialisasi Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Ambil Data dari Firebase
+        function fetchData() {
+            const tableBody = document.getElementById("sensorData");
+            tableBody.innerHTML = ""; // Hapus data lama
+
+            database.ref("sensor").on("value", (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    Object.keys(data).forEach((channel) => {
+                        let row = `<tr>
+                            <td>${channel.replace("channel", "")}</td>
+                            <td>${data[channel].toFixed(2)} V</td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            });
+        }
+
+        // Panggil fungsi saat halaman dimuat
+        fetchData();
+    </script>
+
+</body>
+</html>
